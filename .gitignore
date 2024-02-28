@@ -1,6 +1,7 @@
 # compiled output
 /dist
 /node_modules
+/application_default_credentials.json
 
 # Logs
 logs
