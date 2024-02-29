@@ -13,10 +13,10 @@ import { MulterModule } from '@nestjs/platform-express';
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
+      host: '34.134.107.255',
       port: 5432,
       username: 'postgres',
-      password: 'root',
+      password: '@N04h2021',
       database: 'downloader',
       entities: [User, Storeapp],
       synchronize: true,
