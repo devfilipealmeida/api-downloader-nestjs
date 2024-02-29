@@ -18,7 +18,7 @@ export class StoreappService {
   ) {
     this.bucketName = 'files-to-download';
     this.storage = new Storage({
-      keyFilename: './src/utils/application_default_credentials.json',
+      keyFilename: './application_default_credentials.json',
     });
   }
 
@@ -40,7 +40,7 @@ export class StoreappService {
       stream.on('finish', async () => {
         const publicUrl = `https://storage.googleapis.com/${this.bucketName}/${fileName}`;
         
-        const dataToSave = { ...createStoreAppDto, urlStorage: publicUrl };
+        const dataToSave = { ...createStoreAppDto, urlStorage: publicUrl, savedName: fileName };
 
         try {
           const newFile = this.storageAppRepo.create(dataToSave);
@@ -57,13 +57,25 @@ export class StoreappService {
   }
 
   async findToDownload(idApp: number) {
-    const file = await this.storageAppRepo.find({
-      where: { id: idApp },
-    })
+    const file = await this.storageAppRepo.findOneBy({ id: idApp })
 
-    console.log(file)
+    if(!file) return 'O arquivo não existe';
+    
+    try {
+      const [existsInBucket] = await this.storage.bucket(this.bucketName).file(file.savedName).exists();
 
-    return file;
+      if (!existsInBucket) return 'O arquivo não está em nuvem, por favor, faça novamente o upload.'
+      
+      const [authenticatedUrl] = await this.storage.bucket(this.bucketName).file(file.savedName).getSignedUrl({
+        action: 'read',
+        expires: Date.now() + 15 * 60 * 1000
+      });
+
+      return { urlFile: authenticatedUrl }
+    } catch (error) {
+      console.error('Erro ao gerar URL assinada:', error);
+      return 'Erro ao gerar URL assinada';
+    }
   }
 
   findAll(userId: string) {
