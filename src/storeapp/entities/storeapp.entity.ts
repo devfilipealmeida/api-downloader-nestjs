@@ -12,6 +12,9 @@ export class Storeapp {
     @Column()
     urlStorage: string;
 
+    @Column({ nullable: true })
+    savedName: string;
+
     @Column()
     userId: string;
 }

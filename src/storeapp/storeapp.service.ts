@@ -18,7 +18,7 @@ export class StoreappService {
   ) {
     this.bucketName = 'files-to-download';
     this.storage = new Storage({
-      keyFilename: './src/utils/application_default_credentials.json',
+      keyFilename: './application_default_credentials.json',
     });
   }
 
@@ -40,7 +40,7 @@ export class StoreappService {
       stream.on('finish', async () => {
         const publicUrl = `https://storage.googleapis.com/${this.bucketName}/${fileName}`;
         
-        const dataToSave = { ...createStoreAppDto, urlStorage: publicUrl };
+        const dataToSave = { ...createStoreAppDto, urlStorage: publicUrl, savedName: fileName };
 
         try {
           const newFile = this.storageAppRepo.create(dataToSave);
